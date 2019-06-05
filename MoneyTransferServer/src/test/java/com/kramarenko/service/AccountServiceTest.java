@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyDouble;
@@ -29,7 +30,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void shouldReturnAccount() {
+    public void shouldReturnAccounts() {
         //given
         List<Account> accounts = List.of(new Account(1, "John Lemon", 100),
                 new Account(2, "Jaohn Doe", 50));
@@ -55,5 +56,30 @@ public class AccountServiceTest {
 
         //then
         assertThat(serviceAccount).isEqualTo(account);
+    }
+
+    @Test
+    public void shouldReturnAccount() {
+        //given
+        Account account = new Account(1, "John Lemon", 100);
+        when(dao.getAccountById(1)).thenReturn(Optional.of(account));
+
+        //when
+        Optional<Account> serviceAccount = service.getAccountById(account.getId());
+
+        //then
+        assertThat(serviceAccount).hasValue(account);
+    }
+
+    @Test
+    public void shouldNotReturnAccount() {
+        //given
+        when(dao.getAccountById(1)).thenReturn(Optional.empty());
+
+        //when
+        Optional<Account> serviceAccount = service.getAccountById(1);
+
+        //then
+        assertThat(serviceAccount).isEmpty();
     }
 }

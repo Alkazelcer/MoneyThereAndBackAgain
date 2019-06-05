@@ -6,6 +6,7 @@ import com.kramarenko.model.Account;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class AccountService {
@@ -22,5 +23,9 @@ public class AccountService {
 
     public Account createAccount(String name, double amount) {
         return dao.createAccount(name, amount);
+    }
+
+    public Optional<Account> getAccountById(int id) {
+        return dao.getAccountById(id);
     }
 }

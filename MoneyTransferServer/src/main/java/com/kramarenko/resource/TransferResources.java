@@ -33,6 +33,17 @@ public class TransferResources {
         return accountService.getAccounts();
     }
 
+    @GET
+    @Timed
+    @Path("/account")
+    public Account getAccount(@QueryParam("id") Integer id) {
+        if (id == null) {
+            throw new WebApplicationException("Account from should not be null", Response.Status.BAD_REQUEST);
+        }
+
+        return accountService.getAccountById(id).orElse(null);
+    }
+
     @POST
     @Timed
     @Path("/account")
