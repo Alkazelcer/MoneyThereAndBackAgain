@@ -6,14 +6,17 @@ import com.kramarenko.configuration.dropwizard.TransferServerConfiguration;
 import com.kramarenko.configuration.module.ServerModule;
 import com.kramarenko.healthcheck.TemplateHealthCheck;
 import com.kramarenko.resource.TransferResources;
-import com.kramarenko.service.AccountService;
-import com.kramarenko.service.TransferService;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 public class TransferServer extends Application<TransferServerConfiguration> {
     public static void main(String[] args) throws Exception {
+        if (args.length == 0) {
+            args = new String[] {"server", "conf/sample.yml"};
+
+        }
+
         new TransferServer().run(args);
     }
 
@@ -29,12 +32,8 @@ public class TransferServer extends Application<TransferServerConfiguration> {
     @Override
     public void run(TransferServerConfiguration configuration, Environment environment) {
         Injector injector = Guice.createInjector(new ServerModule());
-        AccountService accountService = injector.getInstance(AccountService.class);
-        TransferService transferService = injector.getInstance(TransferService.class);
 
-        final TransferResources resource = new TransferResources (configuration.getdefaultResponse(), accountService,
-                transferService);
-        environment.jersey().register(resource);
+        environment.jersey().register(injector.getInstance(TransferResources.class));
 
         final TemplateHealthCheck healthCheck = new TemplateHealthCheck();
         environment.healthChecks().register("template", healthCheck);

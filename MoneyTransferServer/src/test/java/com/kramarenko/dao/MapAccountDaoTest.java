@@ -1,6 +1,7 @@
 package com.kramarenko.dao;
 
 import com.kramarenko.model.Account;
+import com.kramarenko.validation.Result;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -106,12 +107,15 @@ public class MapAccountDaoTest {
         acc.setName(newName);
 
         //when
-        dao.updateAccount(acc.getId(), acc);
+        Optional<Account> updated = dao.updateAccount(acc.getId(), acc);
 
         //then
-        assertThat(acc.getId()).isNotNull();
-        assertThat(acc.getName()).isEqualTo(newName);
-        assertThat(acc.getAmount()).isCloseTo(amount, within(0.001));
+        assertThat(updated).isPresent();
+
+        Account updatedAccount = updated.get();
+        assertThat(updatedAccount.getId()).isNotNull();
+        assertThat(updatedAccount.getName()).isEqualTo(newName);
+        assertThat(updatedAccount.getAmount()).isCloseTo(amount, within(0.001));
     }
 
     @Test
@@ -129,5 +133,25 @@ public class MapAccountDaoTest {
         //then
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class)
                 .withFailMessage("Amount could not be negative");
+    }
+
+    @Test
+    public void shouldUpdateWithOptimisticUpdate() {
+        //given
+        String name = "John Lemon";
+        double amount = 100;
+
+        Account acc = dao.createAccount(name, amount);
+        double newAmount = 50;
+
+        //when
+        Result<Account> result =  dao.optimisticUpdateAmount(acc.getId(), acc, newAmount);
+
+        //then
+        assertThat(result.isSuccess()).isTrue();
+
+        Account updated = result.get();
+        assertThat(updated.getId()).isNotNull();
+        assertThat(updated.getAmount()).isCloseTo(newAmount, within(0.001));
     }
 }

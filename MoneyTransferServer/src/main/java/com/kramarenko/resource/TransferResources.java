@@ -12,28 +12,18 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
 
 @Path("/transfer-server")
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 public class TransferResources {
-    private final String defaultResponse;
     private AccountService accountService;
     private TransferService transferService;
 
     @Inject
-    public TransferResources(String defaultResponse, AccountService accountService, TransferService transferService) {
-        this.defaultResponse = defaultResponse;
+    public TransferResources(AccountService accountService, TransferService transferService) {
         this.accountService = accountService;
         this.transferService = transferService;
-    }
-
-    @GET
-    @Timed
-    @Path("/echo")
-    public String echo(@QueryParam("echo") Optional<String> echo) {
-        return echo.orElse(defaultResponse);
     }
 
     @GET
@@ -54,6 +44,7 @@ public class TransferResources {
         if (amount == null) {
             throw new WebApplicationException("Account to should not be null", Response.Status.BAD_REQUEST);
         }
+
         return accountService.createAccount(name, amount);
     }
 

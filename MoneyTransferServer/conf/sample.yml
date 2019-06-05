@@ -1,5 +1,3 @@
-defaultResponse: "I dont know who you are"
-
 server:
   applicationConnectors:
     - type: http
