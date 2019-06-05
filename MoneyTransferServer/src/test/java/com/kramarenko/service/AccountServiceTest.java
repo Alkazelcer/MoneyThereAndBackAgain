@@ -11,6 +11,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,5 +40,20 @@ public class AccountServiceTest {
 
         //then
         assertThat(serviceAccounts).containsOnly(accounts.toArray(Account[]::new));
+    }
+
+    @Test
+    public void shouldCreateAccount() {
+        //given
+        String name = "John Lemon";
+        double amount = 100;
+        Account account = new Account(1, name, amount);
+        when(dao.createAccount(anyString(), anyDouble())).thenReturn(account);
+
+        //when
+        Account serviceAccount = service.createAccount(name, amount);
+
+        //then
+        assertThat(serviceAccount).isEqualTo(account);
     }
 }

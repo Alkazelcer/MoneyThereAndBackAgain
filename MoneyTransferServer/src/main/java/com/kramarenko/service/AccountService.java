@@ -19,4 +19,8 @@ public class AccountService {
     public List<Account> getAccounts() {
         return dao.getAllAccounts();
     }
+
+    public Account createAccount(String name, double amount) {
+        return dao.createAccount(name, amount);
+    }
 }
