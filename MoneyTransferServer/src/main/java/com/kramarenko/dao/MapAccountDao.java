@@ -1,6 +1,7 @@
 package com.kramarenko.dao;
 
 import com.kramarenko.model.Account;
+import com.kramarenko.validation.Result;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -71,6 +72,20 @@ public class MapAccountDao implements AccountDao {
     @Override
     public List<Account> getAllAccounts() {
         return accounts.values().stream().map(Account::copyOf).collect(Collectors.toList());
+    }
+
+    @Override
+    public Result<Account> optimisticUpdateAmount(int id, Account acc, double amount) {
+        synchronized (updateLock) {
+            Account fromMap = accounts.get(id);
+
+            if (Double.compare(fromMap.getAmount(), acc.getAmount()) == 0) {
+                fromMap.setAmount(amount);
+                return Result.success(Account.copyOf(fromMap));
+            }
+        }
+
+        return Result.failure();
     }
 
     private static int generateNextId() {
